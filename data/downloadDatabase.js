@@ -54,47 +54,55 @@ async function createJSONDatabase(workbook) {
   const data = XLSX.utils.sheet_to_json(sheet, { header }).splice(1);
   const json = {
     version: new Date(workbook.Props.ModifiedDate),
+    categories: new Set(), // value is inserted below
     questions: [], // value is inserted below
   };
 
-  json.questions = data.map((row) => ({
-    name: row['name'],
-    id: row['id'],
-    slug: createSlug(row['question PL'], row['id']),
-    question: {
-      pl: row['question PL'],
-      en: row['question ENG'],
-      de: row['question DE'],
-    },
-    answers: {
-      pl: {
-        a: row['answer A PL'],
-        b: row['answer B PL'],
-        c: row['answer C PL'],
+  json.questions = data.map((row) => {
+    const categories = row['categories'].split(',');
+    categories.forEach((category) => json.categories.add(category));
+
+    return {
+      name: row['name'],
+      id: row['id'],
+      slug: createSlug(row['question PL'], row['id']),
+      question: {
+        pl: row['question PL'],
+        en: row['question ENG'],
+        de: row['question DE'],
       },
-      en: {
-        a: row['answer A ENG'],
-        b: row['answer B ENG'],
-        c: row['answer C ENG'],
+      answers: {
+        pl: {
+          a: row['answer A PL'],
+          b: row['answer B PL'],
+          c: row['answer C PL'],
+        },
+        en: {
+          a: row['answer A ENG'],
+          b: row['answer B ENG'],
+          c: row['answer C ENG'],
+        },
+        de: {
+          a: row['answer A DE'],
+          b: row['answer B DE'],
+          c: row['answer C DE'],
+        },
       },
-      de: {
-        a: row['answer A DE'],
-        b: row['answer B DE'],
-        c: row['answer C DE'],
-      },
-    },
-    correctAnswer: row['correct answer'],
-    media: fixMediaURI(row['media']),
-    scope: row['scope'],
-    points: row['points'],
-    categories: row['categories'].split(','),
-    block: row['block name'],
-    source: row['question source'],
-    askedFor: row['asked for'],
-    safety: row['safety'],
-    status: row['status'],
-    subject: row['subject'],
-  }))
+      correctAnswer: row['correct answer'],
+      media: fixMediaURI(row['media']),
+      scope: row['scope'] === 'PODSTAWOWY' ? 'basic' : 'advanced',
+      points: parseInt(row['points']),
+      categories,
+      block: row['block name'],
+      source: row['question source'],
+      askedFor: row['asked for'],
+      safety: row['safety'],
+      status: row['status'],
+      subject: row['subject'],
+    };
+  });
+
+  json.categories = Array.from(json.categories);
 
   const _path = path.resolve(__dirname, 'data.json');
   fs.writeFileSync(_path, JSON.stringify(json), 'utf8');

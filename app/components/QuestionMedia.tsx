@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef, useEffect } from 'react';
 import { getMediaType, Question } from '~/data';
 
 export interface QuestionMediaProps {
@@ -6,6 +6,12 @@ export interface QuestionMediaProps {
 }
 
 const QuestionMedia = ({ question }: QuestionMediaProps) => {
+  const videoRef = createRef<HTMLVideoElement>();
+
+  useEffect(() => {
+    videoRef.current?.load();
+  }, [question.media]);
+
   switch (getMediaType(question)) {
     case 'none':
       return null;
@@ -13,7 +19,7 @@ const QuestionMedia = ({ question }: QuestionMediaProps) => {
     case 'image':
       return (
         <img
-          className="rounded-lg"
+          className="rounded-lg mb-6 "
           width={640}
           height={360}
           src={question.media}
@@ -23,9 +29,13 @@ const QuestionMedia = ({ question }: QuestionMediaProps) => {
     case 'video':
       return (
         <video
-          className="rounded-lg"
+          ref={videoRef}
+          className="rounded-lg mb-6"
           width={640}
           height={360}
+          autoPlay
+          muted
+          controls
         >
           <source src={question.media} type="video/mp4" />
         </video>
