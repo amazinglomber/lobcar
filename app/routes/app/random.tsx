@@ -1,26 +1,19 @@
-import { redirect, useLoaderData, useNavigate } from 'remix';
 import type { LoaderFunction, MetaFunction } from 'remix';
+import { useLoaderData, useNavigate } from 'remix';
+import { useCallback, useEffect, useState } from 'react';
 import QuestionCard from '~/components/QuestionCard';
 import Card from '~/components/Card';
 import Button from '~/components/Button';
-import { useEffect, useState } from 'react';
-import AdCard from '~/components/AdCard';
+import { getRandomQuestion, QuestionWithTranslation } from '~/data';
 
-export const loader: LoaderFunction = async (): Promise<Question> => {
-  const question = getRandomQuestion();
-  if (!question) throw redirect('/app/questions');
+export const loader: LoaderFunction = async (): Promise<QuestionWithTranslation> => getRandomQuestion(4, 'pl');
 
-  return question;
-};
-
-export const meta: MetaFunction = () => {
-  return {
-    title: `lobcar - Losowe pytanie`,
-  };
-};
+export const meta: MetaFunction = () => ({
+  title: 'lobcar - Losowe pytanie',
+});
 
 export default function Question() {
-  const question = useLoaderData<Question>();
+  const question = useLoaderData<QuestionWithTranslation>();
   const navigate = useNavigate();
 
   const [checkedAnswer, setCheckedAnswer] = useState(false);
@@ -29,13 +22,9 @@ export default function Question() {
     setCheckedAnswer(false);
   }, [question]);
 
-  function handleCheckAnswer() {
-    setCheckedAnswer(true);
-  }
+  const handleCheckAnswer = useCallback(() => setCheckedAnswer(true), []);
 
-  function handleNextRandom() {
-    navigate('/app/random');
-  }
+  const handleNextRandom = useCallback(() => navigate('/app/random'), []);
 
   return (
     <div className="flex flex-col lg:flex-row lg:items-start m-4 gap-4">
@@ -53,7 +42,7 @@ export default function Question() {
           <Button onClick={handleCheckAnswer}>Sprawdź odpowiedź</Button>
         </Card>
 
-        <AdCard className="flex-1 grow-[1]" />
+        {/* <AdCard className="flex-1 grow-[1]" /> */}
 
       </div>
 

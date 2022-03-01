@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Question } from '~/data';
 import QuestionMedia from '~/components/QuestionMedia';
 import Card from '~/components/Card';
 import Answer from '~/components/Answer';
+import { QuestionWithTranslation } from '~/data';
 
 export interface QuestionCardProps {
-  question: Question;
+  question: QuestionWithTranslation;
   checkedAnswer: boolean;
   className?: string;
 }
@@ -34,7 +34,7 @@ const QuestionCard = ({ question, checkedAnswer, className }: QuestionCardProps)
       </div>
 
       <h1 className={"text-xl mb-6 whitespace-normal"}>
-        {question.question.pl}
+        {question.question}
       </h1>
       {(question.correctAnswer === 'T' || question.correctAnswer === 'N') ? (
         <div>
@@ -55,7 +55,7 @@ const QuestionCard = ({ question, checkedAnswer, className }: QuestionCardProps)
             <Answer
               key={`answer-${x}`}
               checked={selectedAnswer === x.toUpperCase()}
-              label={question.answers.pl[x]}
+              label={question.answers[x]}
               onClick={handleAnswerClick(x.toUpperCase() as AnswerValueType)}
               isCorrect={question.correctAnswer.toLowerCase() === x}
               checkedAnswer={checkedAnswer}

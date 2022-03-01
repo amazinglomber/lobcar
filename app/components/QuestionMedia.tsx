@@ -1,5 +1,6 @@
 import React, { createRef, useEffect } from 'react';
-import { getMediaType, Question } from '~/data';
+import { Question } from '@prisma/client';
+import { getMediaType } from '~/utils/dataHelpers';
 
 export interface QuestionMediaProps {
   question: Question;
@@ -12,7 +13,7 @@ const QuestionMedia = ({ question }: QuestionMediaProps) => {
     videoRef.current?.load();
   }, [question.media]);
 
-  switch (getMediaType(question)) {
+  switch (getMediaType(question.media)) {
     case 'none':
       return null;
 

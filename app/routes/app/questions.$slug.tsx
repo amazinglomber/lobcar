@@ -1,75 +1,57 @@
-import { useState, useEffect } from 'react';
-import { redirect, useLoaderData, useNavigate } from 'remix';
+import { useEffect, useState } from 'react';
 import type { LoaderFunction, MetaFunction } from 'remix';
+import { redirect, useLoaderData } from 'remix';
 import QuestionCard from '~/components/QuestionCard';
 import Card from '~/components/Card';
 import Button from '~/components/Button';
 import AdCard from '~/components/AdCard';
+import { getQuestionBySlug, QuestionWithTranslation } from '~/data';
 
-type QuestionResultLoader = QuestionResult & { question: Question };
-export const loader: LoaderFunction = async ({ params }): Promise<QuestionResultLoader> => {
-  if (!params.slug) throw new Error('expected params.slug');
+export const loader: LoaderFunction = async ({ params }): Promise<QuestionWithTranslation> => {
+  if (!params.slug) {
+    throw redirect('/app/questions');
+  }
 
-  const questionResult = getQuestionBySlug(params.slug);
-  if (!questionResult.question) throw redirect('/app/questions');
+  const question = await getQuestionBySlug(params.slug, 'pl');
 
-  return questionResult as QuestionResultLoader;
+  if (!question) {
+    throw redirect('/app/questions');
+  }
+
+  return question;
 };
 
-export const meta: MetaFunction = ({ data: questionResult }: { data: QuestionResultLoader }) => {
+export const meta: MetaFunction = ({ data: question }: { data: QuestionWithTranslation }) => {
   return {
-    title: `lobcar - ${questionResult.question.question.pl}`,
-    description: `${questionResult.question.question.pl} Zobacz odpowiedź lub rozwiąż to pytanie samodzielnie, za darmo.`
+    title: `lobcar - ${question.question}`,
+    description: `${question.question} Zobacz odpowiedź lub rozwiąż to pytanie samodzielnie, za darmo.`
   };
 };
 
 export default function Question() {
-  const navigate = useNavigate();
-  const questionResult = useLoaderData<QuestionResultLoader>();
+  const question = useLoaderData<QuestionWithTranslation>();
 
   const [checkedAnswer, setCheckedAnswer] = useState(false);
 
   useEffect(() => {
     setCheckedAnswer(false);
-  }, [questionResult]);
+  }, [question]);
 
   function handleCheckAnswer() {
     setCheckedAnswer(true);
-  }
-
-  function handlePrevious() {
-    navigate(`/app/questions/${questionResult.prev}`);
-  }
-
-  function handleNext() {
-    navigate(`/app/questions/${questionResult.next}`);
   }
 
   return (
     <div className="flex flex-col lg:flex-row lg:items-start m-4 gap-4">
       <QuestionCard
         className="flex-1 grow-[3]"
-        question={questionResult.question}
+        question={question}
         checkedAnswer={checkedAnswer}
       />
 
       <div className="flex flex-col flex-1 grow-[1] gap-4">
 
         <Card className="flex flex-col ">
-          <Button
-            variant="outlined"
-            disabled={!questionResult.prev}
-            onClick={handlePrevious}
-          >
-            Poprzednie pytanie
-          </Button>
-          <Button
-            variant="outlined"
-            disabled={!questionResult.next}
-            onClick={handleNext}
-          >
-            Następne pytanie
-          </Button>
           <Button onClick={handleCheckAnswer}>Sprawdź odpowiedź</Button>
         </Card>
 

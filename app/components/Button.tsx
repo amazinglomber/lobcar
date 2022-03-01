@@ -5,7 +5,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   variant?: 'contained' | 'outlined' | 'text';
 }
 
-const Button = ({ children, variant = 'contained', disabled, className, ...other }: ButtonProps) => {
+const Button = ({ children, variant = 'contained', type = 'button', value, disabled, className, ...other }: ButtonProps) => {
   const containedStyle = 'border-1 border-blue-700 bg-primary hover:bg-blue-600/90 text-white';
   const outlinedStyle = 'border-2 border-primary hover:bg-primary/10 ';
 
@@ -18,6 +18,8 @@ const Button = ({ children, variant = 'contained', disabled, className, ...other
         className,
       )}
       disabled={disabled}
+      type={type}
+      value={value}
       {...other}
     >
       {children}
