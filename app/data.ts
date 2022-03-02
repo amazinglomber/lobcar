@@ -51,8 +51,6 @@ export async function getRandomQuestion(categoryId: number, languageCode: string
     LIMIT 1;
   `;
 
-  console.log(result[0]);
-
   const {
     questionContent, media, answerA, answerB, answerC, ...question
   } = result[0];
@@ -67,6 +65,43 @@ export async function getRandomQuestion(categoryId: number, languageCode: string
       c: answerC,
     },
   };
+}
+
+export async function getExam(categoryId: number, languageCode: string): Promise<QuestionWithTranslation[]> {
+  const questions = await Promise.all([
+    getQuestionsForExam(languageCode, categoryId, 'basic', 3, 10),
+    getQuestionsForExam(languageCode, categoryId, 'basic', 2, 6),
+    getQuestionsForExam(languageCode, categoryId, 'basic', 1, 4),
+    getQuestionsForExam(languageCode, categoryId, 'advanced', 3, 6),
+    getQuestionsForExam(languageCode, categoryId, 'advanced', 2, 4),
+    getQuestionsForExam(languageCode, categoryId, 'advanced', 1, 2),
+  ]);
+
+  return questions.flat();
+}
+
+async function getQuestionsForExam(languageCode: string, categoryId: number, scope: 'basic' | 'advanced', points: number, count: number): Promise<QuestionWithTranslation[]> {
+  const questions: any[] = await db.$queryRaw`
+    SELECT * FROM Question Q
+    JOIN _CategoryToQuestion CTQ ON Q.id=CTQ.B
+    JOIN QuestionTranslation QT ON Q.id=QT.questionId
+    WHERE QT.languageCode=${languageCode} AND CTQ.A=${categoryId} AND  Q.scope=${scope} AND Q.points=${points}
+    ORDER BY random()
+    LIMIT ${count};
+  `;
+
+  return questions.map(({
+    questionContent, media, answerA, answerB, answerC, ...question
+  }) => ({
+    ...question,
+    media: `https://d2v1k3xewbu9zy.cloudfront.net/${media}`,
+    question: questionContent,
+    answers: {
+      a: answerA,
+      b: answerB,
+      c: answerC,
+    },
+  }));
 }
 
 export function getCategories(): Promise<Category[]> {

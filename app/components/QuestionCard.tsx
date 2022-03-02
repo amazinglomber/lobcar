@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import QuestionMedia from '~/components/QuestionMedia';
+import React, { useEffect, useState } from 'react';
+import QuestionMedia, { QuestionMediaProps } from '~/components/QuestionMedia';
 import Card from '~/components/Card';
 import Answer from '~/components/Answer';
 import { QuestionWithTranslation } from '~/data';
@@ -8,11 +8,16 @@ export interface QuestionCardProps {
   question: QuestionWithTranslation;
   checkedAnswer: boolean;
   className?: string;
+  hideMedia?: boolean;
+  onMediaClick?: QuestionMediaProps['onClick'];
+  onMediaEnded?: QuestionMediaProps['onMediaEnded'];
 }
 
 type AnswerValueType = 'T' | 'N' | 'A' | 'B' | 'C';
 
-const QuestionCard = ({ question, checkedAnswer, className }: QuestionCardProps) => {
+const QuestionCard: React.FunctionComponent<QuestionCardProps> = ({
+  question, checkedAnswer, className, hideMedia = false, onMediaClick, onMediaEnded,
+}) => {
   const [selectedAnswer, setSelectedAnswer] = useState<AnswerValueType>();
 
   useEffect(() => {
@@ -23,17 +28,17 @@ const QuestionCard = ({ question, checkedAnswer, className }: QuestionCardProps)
     if (!checkedAnswer) {
       setSelectedAnswer(value);
     }
-  }
+  };
 
   return (
     <Card
       className={className}
     >
       <div className="flex flex-row justify-center">
-        <QuestionMedia question={question} />
+        <QuestionMedia question={question} hidden={hideMedia} onClick={onMediaClick} onMediaEnded={onMediaEnded} />
       </div>
 
-      <h1 className={"text-xl mb-6 whitespace-normal"}>
+      <h1 className="text-xl mb-6 whitespace-normal">
         {question.question}
       </h1>
       {(question.correctAnswer === 'T' || question.correctAnswer === 'N') ? (

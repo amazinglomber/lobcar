@@ -12,8 +12,11 @@ module.exports = {
           dp1: '#1d1d1d',
           dp2: '#212121',
         }
-      }
-    }
+      },
+      transitionProperty: {
+        width: 'width',
+      },
+    },
   },
   darkMode: 'class',
   variants: {},
