@@ -2,46 +2,52 @@ import {
   Outlet, ActionFunction, Form, LoaderFunction, redirect, useLoaderData,
 } from 'remix';
 import { Category } from '@prisma/client';
-import { categoryCookie } from '~/cookies';
 import Navbar from '~/components/Navbar';
 import Dialog from '~/components/Dialog';
 import Button from '~/components/Button';
 import { getCategories } from '~/data';
+import { getCategoryCookie } from '~/utils/cookieHelpers';
+import { categoryIdCookie } from '~/cookies';
 
 interface LoaderData {
-  category: string;
+  categoryId: number | null;
   categories: Category[];
 }
 
 export const loader: LoaderFunction = async ({ request }): Promise<LoaderData> => {
   const categories = await getCategories();
-  const cookieHeader = request.headers.get('Cookie');
-  const cookie = (await categoryCookie.parse(cookieHeader)) || { category: null };
+
+  const cookie = await getCategoryCookie(request);
 
   return {
-    category: cookie.category,
+    categoryId: cookie.categoryId,
     categories,
   };
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get('Cookie');
-  const cookie = (await categoryCookie.parse(cookieHeader)) || {};
+  const cookie = await getCategoryCookie(request);
   const bodyParams = await request.formData();
 
-  cookie.category = bodyParams.get('category');
+  const catId = bodyParams.get('categoryId');
 
-  return redirect('/app', {
+  if (!catId) {
+    cookie.categoryId = null;
+  } else {
+    cookie.categoryId = +catId;
+  }
+
+  return redirect(request.url, {
     headers: {
-      'Set-Cookie': await categoryCookie.serialize(cookie),
+      'Set-Cookie': await categoryIdCookie.serialize(cookie),
     },
   });
 };
 
 export default function Index() {
-  const { category, categories } = useLoaderData<LoaderData>();
+  const { categoryId, categories } = useLoaderData<LoaderData>();
 
-  const openDialog = !category;
+  const openDialog = categoryId === null;
 
   return (
     <div>
@@ -58,7 +64,7 @@ export default function Index() {
                 key={`form-${cat.id}`}
                 type="submit"
                 value={cat.id}
-                name="category"
+                name="categoryId"
               >
                 {cat.name}
               </Button>

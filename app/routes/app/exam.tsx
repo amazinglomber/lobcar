@@ -1,19 +1,44 @@
 import type { LoaderFunction, MetaFunction } from 'remix';
-import { useLoaderData } from 'remix';
+import { redirect, useLoaderData } from 'remix';
 import {
   useCallback, useEffect, useRef, useState,
 } from 'react';
 import clsx from 'clsx';
+import { Category } from '@prisma/client';
 import Card from '~/components/Card';
 import PageOffset from '~/components/PageOffset';
 import Button from '~/components/Button';
 
-import { getExam, QuestionWithTranslation } from '~/data';
+import { getCategoryById, getExam, QuestionWithTranslation } from '~/data';
 import QuestionCard from '~/components/QuestionCard';
 import ProgressBar from '~/components/ProgressBar';
 import { getMediaType } from '~/utils/dataHelpers';
+import { getCategoryCookie } from '~/utils/cookieHelpers';
 
-export const loader: LoaderFunction = async (): Promise<QuestionWithTranslation[]> => getExam(4, 'pl');
+interface LoaderData {
+  questions: QuestionWithTranslation[];
+  category: Category;
+}
+
+export const loader: LoaderFunction = async ({ request }): Promise<LoaderData> => {
+  const categoryCookie = await getCategoryCookie(request);
+
+  if (categoryCookie.categoryId === null) {
+    throw redirect('/app');
+  }
+
+  const category = await getCategoryById(categoryCookie.categoryId);
+
+  // TODO: Add error here?
+  if (category === null) {
+    throw redirect('/app');
+  }
+
+  return {
+    questions: await getExam(category.id, 'pl'),
+    category,
+  };
+};
 
 export const meta: MetaFunction = () => ({
   title: 'lobcar - Egzamin',
@@ -33,7 +58,7 @@ function formatSecondsAsTimer(seconds: number): string {
 // FIXME: In advanced question there should be no time for reading,
 // and timer should be set to 50 seconds.
 export default function Exam() {
-  const questions = useLoaderData<QuestionWithTranslation[]>();
+  const { questions, category } = useLoaderData<LoaderData>();
 
   const [examStarted, setExamStarted] = useState(false);
 
@@ -154,7 +179,7 @@ export default function Exam() {
             <div className="flex flex-col flex-1 grow-[3] gap-4">
               <Card className="flex flex-row justify-between">
                 <span>{`Wartość punktowa: ${question.points}`}</span>
-                <span>Wybrana kategoria: B</span>
+                <span>{`Wybrana kategoria: ${category.name}`}</span>
                 <span>{`Pozostały czas: ${formatSecondsAsTimer(examTimer)}`}</span>
               </Card>
               <QuestionCard

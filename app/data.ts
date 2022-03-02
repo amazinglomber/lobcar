@@ -104,8 +104,14 @@ async function getQuestionsForExam(languageCode: string, categoryId: number, sco
   }));
 }
 
-export function getCategories(): Promise<Category[]> {
+export async function getCategories(): Promise<Category[]> {
   return db.category.findMany();
+}
+
+export async function getCategoryById(id: number): Promise<Category | null> {
+  return db.category.findUnique({
+    where: { id },
+  });
 }
 
 function mapToQuestionWithTranslation(q: (Question & { translations: QuestionTranslation[] })) {

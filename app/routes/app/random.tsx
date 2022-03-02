@@ -1,12 +1,21 @@
 import type { LoaderFunction, MetaFunction } from 'remix';
-import { useLoaderData, useNavigate } from 'remix';
+import { redirect, useLoaderData, useNavigate } from 'remix';
 import { useCallback, useEffect, useState } from 'react';
 import QuestionCard from '~/components/QuestionCard';
 import Card from '~/components/Card';
 import Button from '~/components/Button';
 import { getRandomQuestion, QuestionWithTranslation } from '~/data';
+import { getCategoryCookie } from '~/utils/cookieHelpers';
 
-export const loader: LoaderFunction = async (): Promise<QuestionWithTranslation> => getRandomQuestion(4, 'pl');
+export const loader: LoaderFunction = async ({ request }): Promise<QuestionWithTranslation> => {
+  const categoryCookie = await getCategoryCookie(request);
+
+  if (categoryCookie.categoryId === null) {
+    throw redirect('/app');
+  }
+
+  return getRandomQuestion(4, 'pl');
+};
 
 export const meta: MetaFunction = () => ({
   title: 'lobcar - Losowe pytanie',

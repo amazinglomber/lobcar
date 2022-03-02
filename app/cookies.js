@@ -1,9 +1,5 @@
 import { createCookie } from 'remix';
 
-export const categoryCookie = createCookie('category', {
-  maxAge: 604_800, // one week
-});
-
-export const userPrefs = createCookie('user-prefs', {
+export const categoryIdCookie = createCookie('categoryId', {
   maxAge: 604_800, // one week
 });
