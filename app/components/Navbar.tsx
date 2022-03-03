@@ -12,6 +12,7 @@ const routes = [
   { to: '/app/exam', title: 'Egzamin' },
 ];
 
+// TODO: Add category select button
 const Navbar = () => {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);

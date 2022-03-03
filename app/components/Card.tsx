@@ -19,4 +19,4 @@ const Card = ({ children, className }: CardProps) => {
   );
 };
 
-export default Card;
+export default React.memo(Card);

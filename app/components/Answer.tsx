@@ -1,5 +1,6 @@
 import { MdCheck, MdClose } from 'react-icons/md';
 import clsx from 'clsx';
+import React from 'react';
 
 export interface AnswerProps {
   label: string;
@@ -43,4 +44,4 @@ const Answer = ({ label, isCorrect, checkedAnswer, checked, onClick }: AnswerPro
   );
 };
 
-export default Answer;
+export default React.memo(Answer);

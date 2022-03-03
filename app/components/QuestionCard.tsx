@@ -4,6 +4,8 @@ import Card from '~/components/Card';
 import Answer from '~/components/Answer';
 import { QuestionWithTranslation } from '~/data';
 
+export type AnswerValueType = 'T' | 'N' | 'A' | 'B' | 'C';
+
 export interface QuestionCardProps {
   question: QuestionWithTranslation;
   checkedAnswer: boolean;
@@ -11,12 +13,11 @@ export interface QuestionCardProps {
   hideMedia?: boolean;
   onMediaClick?: QuestionMediaProps['onClick'];
   onMediaEnded?: QuestionMediaProps['onMediaEnded'];
+  onAnswerSelect?: (answer: AnswerValueType) => void;
 }
 
-type AnswerValueType = 'T' | 'N' | 'A' | 'B' | 'C';
-
 const QuestionCard: React.FunctionComponent<QuestionCardProps> = ({
-  question, checkedAnswer, className, hideMedia = false, onMediaClick, onMediaEnded,
+  question, checkedAnswer, className, hideMedia = false, onMediaClick, onMediaEnded, onAnswerSelect,
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<AnswerValueType>();
 
@@ -27,6 +28,10 @@ const QuestionCard: React.FunctionComponent<QuestionCardProps> = ({
   const handleAnswerClick = (value: AnswerValueType) => () => {
     if (!checkedAnswer) {
       setSelectedAnswer(value);
+
+      if (onAnswerSelect) {
+        onAnswerSelect(value);
+      }
     }
   };
 

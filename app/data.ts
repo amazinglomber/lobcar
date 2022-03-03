@@ -68,6 +68,15 @@ export async function getRandomQuestion(categoryId: number, languageCode: string
 }
 
 export async function getExam(categoryId: number, languageCode: string): Promise<QuestionWithTranslation[]> {
+  // const questions = [
+  //   ...(await getQuestionsForExam(languageCode, categoryId, 'basic', 3, 10)),
+  //   ...(await getQuestionsForExam(languageCode, categoryId, 'basic', 2, 6)),
+  //   ...(await getQuestionsForExam(languageCode, categoryId, 'basic', 1, 4)),
+  //   ...(await getQuestionsForExam(languageCode, categoryId, 'advanced', 3, 6)),
+  //   ...(await getQuestionsForExam(languageCode, categoryId, 'advanced', 2, 4)),
+  //   ...(await getQuestionsForExam(languageCode, categoryId, 'advanced', 1, 2)),
+  // ];
+
   const questions = await Promise.all([
     getQuestionsForExam(languageCode, categoryId, 'basic', 3, 10),
     getQuestionsForExam(languageCode, categoryId, 'basic', 2, 6),

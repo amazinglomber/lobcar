@@ -28,6 +28,10 @@ const QuestionMedia: React.FunctionComponent<QuestionMediaProps> = ({
     }
   }, [onClick]);
 
+  if (mediaType === 'none') {
+    return <QuestionMediaPlaceholder mediaType="none" />;
+  }
+
   if (hidden) {
     return <QuestionMediaPlaceholder mediaType={mediaType} handleClick={handleClick} />;
   }
@@ -59,9 +63,6 @@ const QuestionMedia: React.FunctionComponent<QuestionMediaProps> = ({
           <source src={question.media} type="video/mp4" />
         </video>
       );
-
-    case 'none':
-      return <QuestionMediaPlaceholder mediaType={'none'} />
 
     default:
       return null;
