@@ -1,19 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import clsx from 'clsx';
 import { Category } from '@prisma/client';
 import ExamTopCard from '~/components/Exam/ExamTopCard';
-import QuestionCard, { AnswerValueType } from '~/components/QuestionCard';
+import QuestionCard, { AnswerValueType } from '~/components/Question/QuestionCard';
 import ExamQuestionNumberCards from '~/components/Exam/ExamQuestionNumberCards';
 import Card from '~/components/Card';
-import ProgressBar from '~/components/ProgressBar';
 import Button from '~/components/Button';
 import { getMediaType } from '~/utils/dataHelpers';
 import useInterval from '~/hooks/useInterval';
 import { QuestionWithTranslation } from '~/data';
+import ExamProgressBar from '~/components/Exam/ExamProgressBar';
 
-const questionReadTime = 5;
-const questionAnswerTime = 3;
-const advancedQuestionAnswerTime = 10;
+const questionReadTime = 20;
+const questionAnswerTime = 15;
+const advancedQuestionAnswerTime = 50;
 
 export interface ExamProps {
   questions: QuestionWithTranslation[];
@@ -93,37 +92,42 @@ const Exam: React.FC<ExamProps> = ({
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row lg:items-start gap-4">
+
+      {/* Exam main panel */}
       <div className="flex flex-col flex-1 grow-[3] gap-4">
         <ExamTopCard question={question} category={category} onExamTimeEnd={handleEndExam} />
         <QuestionCard
           question={question}
           checkedAnswer={false}
           hideMedia={hideMedia}
+          hideControls
           onMediaClick={showMedia}
           onMediaEnded={handleMediaEnded}
           onAnswerSelect={handleAnswerSelect}
         />
       </div>
 
+      {/* Exam right panel */}
       <div className="flex flex-col flex-1 grow-[1] gap-4">
 
         <ExamQuestionNumberCards questionNumber={questionIndex} />
 
+        {/* Exam progress */}
         <Card className="flex flex-col items-center gap-4">
-          {(hideMedia && question.scope === 'basic') && <p>Czas na zapoznanie się z pytaniem</p>}
-          {(!hideMedia || question.scope === 'advanced') && <p>Czas na udzielenie odpowiedzi</p>}
-
-          <ProgressBar
-            value={timer}
-            max={20}
-            valueSuffix="s"
-            progressValueStyles={clsx(
-              (timer <= 8 && timer > 5) && 'bg-yellow-500',
-              timer <= 5 && 'bg-red-500',
-            )}
-          />
+          {hideMedia ? (
+            <>
+              <p>Czas na zapoznanie się z pytaniem</p>
+              <ExamProgressBar value={timer} max={questionReadTime} />
+            </>
+          ) : (
+            <>
+              <p>Czas na udzielenie odpowiedzi</p>
+              <ExamProgressBar value={timer} max={question.scope === 'basic' ? questionAnswerTime : advancedQuestionAnswerTime} />
+            </>
+          )}
         </Card>
 
+        {/* Exam controls */}
         <Card className="flex flex-col ">
 
           {/* Show media button */}

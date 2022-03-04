@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { LoaderFunction, MetaFunction } from 'remix';
 import { redirect, useLoaderData } from 'remix';
-import QuestionCard from '~/components/QuestionCard';
+import QuestionCard from '~/components/Question/QuestionCard';
 import Card from '~/components/Card';
 import Button from '~/components/Button';
 import { getQuestionBySlug, QuestionWithTranslation } from '~/data';

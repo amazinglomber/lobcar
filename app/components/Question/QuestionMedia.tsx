@@ -8,11 +8,12 @@ export interface QuestionMediaProps {
   hidden?: boolean;
   onClick?: () => void;
   onMediaEnded?: () => void;
+  hideControls?: boolean;
 }
 
 // TODO: Add "hide controls" prop
 const QuestionMedia: React.FunctionComponent<QuestionMediaProps> = ({
-  question, hidden = false, onClick, onMediaEnded,
+  question, hidden = false, onClick, onMediaEnded, hideControls = false,
 }) => {
   const videoRef = createRef<HTMLVideoElement>();
 
@@ -58,7 +59,7 @@ const QuestionMedia: React.FunctionComponent<QuestionMediaProps> = ({
           onEnded={onMediaEnded}
           autoPlay
           muted
-          controls
+          controls={!hideControls}
         >
           <source src={question.media} type="video/mp4" />
         </video>
