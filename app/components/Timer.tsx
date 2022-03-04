@@ -1,30 +1,44 @@
 import React, { useEffect, useState } from 'react';
+import useInterval from '~/hooks/useInterval';
 
-export interface TimerProps {
-  startSeconds: number;
+/**
+ * Returns seconds formatted as mm:ss
+ * @param seconds Time in seconds to format.
+ */
+function formatSecondsAsTimer(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+
+  return `${m < 10 ? 0 : ''}${m}:${s < 10 ? 0 : ''}${s}`;
 }
 
-const Timer: React.FunctionComponent<TimerProps> = ({ startSeconds }) => {
-  const [timer, setTimer] = useState(startSeconds);
-  const [timerToggle, setTimerToggle] = useState(true);
+export interface TimerProps {
+  start: number;
+  end?: number;
+  onEnd?: () => void;
+}
+
+const Timer: React.FunctionComponent<TimerProps> = ({ start, end = 0, onEnd }) => {
+  const [seconds, setSeconds] = useState(start);
+  const [timerRunning, setTimerRunning] = useState(true);
+
+  useInterval(() => {
+    setSeconds((currentSeconds) => currentSeconds - 1);
+  }, timerRunning ? 1000 : null);
 
   useEffect(() => {
-    let _timer: NodeJS.Timeout;
+    if (seconds <= end) {
+      setTimerRunning(false);
 
-    if (timerToggle) {
-      _timer = setInterval(() => {
-        setTimer((time) => time - 1);
-      }, 1000);
+      if (onEnd) {
+        onEnd();
+      }
     }
-
-    return () => {
-      clearInterval(_timer);
-    };
-  }, [timerToggle]);
+  }, [seconds]);
 
   return (
     <div>
-      {timer}
+      {formatSecondsAsTimer(seconds)}
     </div>
   );
 };
