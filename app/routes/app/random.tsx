@@ -10,8 +10,8 @@ import { getCategoryCookie } from '~/utils/cookieHelpers';
 export const loader: LoaderFunction = async ({ request }): Promise<QuestionWithTranslation> => {
   const categoryCookie = await getCategoryCookie(request);
 
-  if (categoryCookie.categoryId === null) {
-    throw redirect('/app');
+  if (!categoryCookie.categoryId) {
+    throw redirect('/app/category');
   }
 
   return getRandomQuestion(categoryCookie.categoryId, 'pl');

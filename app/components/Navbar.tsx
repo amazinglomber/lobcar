@@ -5,7 +5,8 @@ import { useCallback, useRef, useState } from 'react';
 import clsx from 'clsx';
 import DarkModeSwitch from '~/components/DarkModeSwitch';
 import useOutsideAlerter from '~/hooks/useOutsideAlerter';
-import Button from '~/components/Button';
+import LinkButton from '~/components/LinkButton';
+import useCategory from '~/hooks/useCategory';
 
 const routes = [
   { to: '/app/questions', title: 'Lista pytań' },
@@ -15,6 +16,8 @@ const routes = [
 
 // TODO: Add category select button
 function Navbar() {
+  const { selectedCategoryName } = useCategory();
+
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -75,6 +78,13 @@ function Navbar() {
       <div className="flex flex-1" />
 
       <ClientOnly fallback={null}>
+        <div className="flex flex-row items-center mr-4">
+          <span className="mr-2">Wybrana kategoria: </span>
+          <LinkButton to="/app/category" variant="outlined">
+            {selectedCategoryName ?? '?'}
+          </LinkButton>
+        </div>
+
         <DarkModeSwitch />
       </ClientOnly>
 

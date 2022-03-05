@@ -1,12 +1,19 @@
 import type { LoaderFunction, MetaFunction } from 'remix';
-import { Link, useFetcher } from 'remix';
+import { Link, redirect, useFetcher } from 'remix';
 import { useCallback, useEffect, useState } from 'react';
 import Card from '~/components/Card';
 import { getAllQuestions, QuestionsResponse, QuestionWithTranslation } from '~/data';
 import PageOffset from '~/components/PageOffset';
 import Button from '~/components/Button';
+import { getCategoryCookie } from '~/utils/cookieHelpers';
 
 export const loader: LoaderFunction = async ({ request }): Promise<QuestionsResponse> => {
+  const categoryCookie = await getCategoryCookie(request);
+
+  if (!categoryCookie.categoryId) {
+    throw redirect('/app/category');
+  }
+
   const url = new URL(request.url);
   const page = +(url.searchParams.get('page') ?? 1);
 

@@ -7,7 +7,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export const mainStyle = 'py-2 px-4 my-1 active:scale-[0.97] transition ease-linear rounded-lg';
 export const containedStyle = 'border-1 border-blue-700 bg-primary hover:bg-blue-600/90 text-white';
-const outlinedStyle = 'border-2 border-primary hover:bg-primary/10 ';
+export const outlinedStyle = 'border-2 border-primary hover:bg-primary/10 ';
 
 function Button({
   children, variant = 'contained', type = 'button', value, disabled, className, ...other

@@ -1,6 +1,11 @@
-import { categoryIdCookie } from '~/cookies';
+import { categoryCookie } from '~/cookies';
 
-export async function getCategoryCookie(request: Request): Promise<{ categoryId: number | null }> {
+interface CategoryCookie {
+  categoryId: number | null;
+  categoryName: string | null;
+}
+
+export async function getCategoryCookie(request: Request): Promise<CategoryCookie> {
   const cookieHeader = request.headers.get('Cookie');
-  return (await categoryIdCookie.parse(cookieHeader)) || { categoryId: null };
+  return (await categoryCookie.parse(cookieHeader)) || { categoryId: null, categoryName: null };
 }
