@@ -37,7 +37,7 @@ const Exam: React.FC<ExamProps> = ({
   const [timerRunning, setTimerRunning] = useState(true);
 
   useInterval(() => {
-    setTimer((currentTimer) => currentTimer - 1);
+    setTimer((prevTimer) => prevTimer - 1);
   }, timer > 0 && timerRunning ? 1000 : null);
 
   useEffect(() => {

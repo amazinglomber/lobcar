@@ -11,7 +11,6 @@ export interface QuestionMediaProps {
   hideControls?: boolean;
 }
 
-// TODO: Add "hide controls" prop
 const QuestionMedia: React.FunctionComponent<QuestionMediaProps> = ({
   question, hidden = false, onClick, onMediaEnded, hideControls = false,
 }) => {

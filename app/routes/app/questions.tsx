@@ -1,10 +1,17 @@
 import type { LoaderFunction, MetaFunction } from 'remix';
-import { Link, useLoaderData } from 'remix';
+import { Link, useFetcher } from 'remix';
+import { useCallback, useEffect, useState } from 'react';
 import Card from '~/components/Card';
-import { getAllQuestions, QuestionWithTranslation } from '~/data';
+import { getAllQuestions, QuestionsResponse, QuestionWithTranslation } from '~/data';
 import PageOffset from '~/components/PageOffset';
+import Button from '~/components/Button';
 
-export const loader: LoaderFunction = async (): Promise<QuestionWithTranslation[]> => getAllQuestions('pl');
+export const loader: LoaderFunction = async ({ request }): Promise<QuestionsResponse> => {
+  const url = new URL(request.url);
+  const page = +(url.searchParams.get('page') ?? 1);
+
+  return getAllQuestions(page, 'pl');
+};
 
 export const meta: MetaFunction = () => ({
   title: 'lobcar - Lista wszystkich pytań',
@@ -12,22 +19,46 @@ export const meta: MetaFunction = () => ({
 });
 
 export default function Questions() {
-  const questions = useLoaderData<QuestionWithTranslation[]>();
+  const fetcher = useFetcher<QuestionsResponse>();
+  const [questions, setQuestions] = useState<QuestionWithTranslation[]>([]);
+
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    fetcher.load(`/app/questions?page=${page}`);
+  }, [page]);
+
+  useEffect(() => {
+    if (fetcher.data && fetcher.data.questions.length > 0) {
+      setQuestions((prevQuestions) => [...prevQuestions, ...fetcher.data.questions]);
+    }
+  }, [fetcher.data]);
+
+  const nextPage = useCallback(() => {
+    setPage((prevPage) => prevPage + 1);
+  }, []);
 
   return (
     <PageOffset>
       <div className="flex flex-col-reverse lg:flex-row lg:items-start gap-4">
 
-        <Card className="flex-1 grow-[4]">
+        <Card className="flex-1 grow-[4] overflow-auto">
           <h1 className="text-2xl mb-2">Lista pytań</h1>
+
           {questions.map((question) => (
             <div key={`question-${question.slug}`} style={{ padding: 4 }}>
               <Link prefetch="intent" to={question.slug}>{question.question}</Link>
             </div>
           ))}
-        </Card>
 
-        {/* <AdCard className="flex-1 grow-[1]" /> */}
+          <div className="flex flex-row justify-center mt-4">
+            <Button onClick={nextPage}>
+              {fetcher.state === 'idle'
+                ? 'Pokaż więcej'
+                : 'Ładowanie...'}
+            </Button>
+          </div>
+        </Card>
 
       </div>
     </PageOffset>

@@ -10,6 +10,11 @@ export interface QuestionWithTranslation extends Question {
   }
 }
 
+export interface QuestionsResponse {
+  questions: QuestionWithTranslation[];
+
+}
+
 export async function getQuestionBySlug(slug: string, languageCode: string): Promise<QuestionWithTranslation | null> {
   const q = await db.question.findUnique({
     where: { slug },
@@ -25,16 +30,21 @@ export async function getQuestionBySlug(slug: string, languageCode: string): Pro
   return mapToQuestionWithTranslation(q);
 }
 
-export async function getAllQuestions(languageCode: string): Promise<QuestionWithTranslation[]> {
+export async function getAllQuestions(page: number = 1, languageCode: string = 'pl'): Promise<QuestionsResponse> {
   const questions = await db.question.findMany({
     include: {
       translations: {
         where: { languageCode },
       },
     },
+    skip: (page - 1) * 20,
+    take: 20,
   });
 
-  return questions.map((q) => mapToQuestionWithTranslation(q));
+  return {
+    questions: questions.map((q) => mapToQuestionWithTranslation(q)),
+
+  };
 }
 
 export async function getAllQuestionsWithoutTranslations(): Promise<Question[]> {

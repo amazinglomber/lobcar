@@ -49,7 +49,7 @@ function StartExam() {
   const endExam = useCallback(() => setExamRunning(false), []);
 
   const onScoreChange = useCallback((newScore: number) => {
-    setScore((currentScore) => currentScore + newScore);
+    setScore((prevScore) => prevScore + newScore);
   }, []);
 
   return examRunning
