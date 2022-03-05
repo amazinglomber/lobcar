@@ -1,10 +1,10 @@
 import React from 'react';
-import useTheme from '~/hooks/useTheme';
 import { MdDarkMode, MdLightMode } from 'react-icons/md';
-import IconButton from '~/components/IconButton';
 import clsx from 'clsx';
+import useTheme from '~/hooks/useTheme';
+import IconButton from '~/components/IconButton';
 
-const DarkModeSwitch = () => {
+function DarkModeSwitch() {
   const { switchTheme, mode } = useTheme();
 
   function handleClick() {
@@ -29,6 +29,6 @@ const DarkModeSwitch = () => {
       />
     </IconButton>
   );
-};
+}
 
 export default DarkModeSwitch;

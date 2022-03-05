@@ -14,7 +14,7 @@ export const loader: LoaderFunction = async ({ request }): Promise<QuestionWithT
     throw redirect('/app');
   }
 
-  return getRandomQuestion(4, 'pl');
+  return getRandomQuestion(categoryCookie.categoryId, 'pl');
 };
 
 export const meta: MetaFunction = () => ({
@@ -50,8 +50,6 @@ export default function Question() {
           <Button onClick={handleNextRandom} variant="outlined">Losuj następne</Button>
           <Button onClick={handleCheckAnswer}>Sprawdź odpowiedź</Button>
         </Card>
-
-        {/* <AdCard className="flex-1 grow-[1]" /> */}
 
       </div>
 

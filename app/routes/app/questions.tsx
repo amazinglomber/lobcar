@@ -1,20 +1,15 @@
 import type { LoaderFunction, MetaFunction } from 'remix';
 import { Link, useLoaderData } from 'remix';
-import AdCard from '~/components/AdCard';
 import Card from '~/components/Card';
 import { getAllQuestions, QuestionWithTranslation } from '~/data';
 import PageOffset from '~/components/PageOffset';
 
-export const loader: LoaderFunction = async (): Promise<QuestionWithTranslation[]> => {
-  return getAllQuestions('pl');
-};
+export const loader: LoaderFunction = async (): Promise<QuestionWithTranslation[]> => getAllQuestions('pl');
 
-export const meta: MetaFunction = () => {
-  return {
-    title: 'lobcar - Lista wszystkich pytań',
-    description: 'Lista wszystkich pytań znajdujących się na egzaminie.',
-  };
-};
+export const meta: MetaFunction = () => ({
+  title: 'lobcar - Lista wszystkich pytań',
+  description: 'Lista wszystkich pytań znajdujących się na egzaminie.',
+});
 
 export default function Questions() {
   const questions = useLoaderData<QuestionWithTranslation[]>();
@@ -32,10 +27,9 @@ export default function Questions() {
           ))}
         </Card>
 
-        {/*<AdCard className="flex-1 grow-[1]" />*/}
+        {/* <AdCard className="flex-1 grow-[1]" /> */}
 
       </div>
     </PageOffset>
   );
 }
-

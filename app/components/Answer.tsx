@@ -10,7 +10,9 @@ export interface AnswerProps {
   onClick: () => void;
 }
 
-const Answer = ({ label, isCorrect, checkedAnswer, checked, onClick }: AnswerProps) => {
+function Answer({
+  label, isCorrect, checkedAnswer, checked, onClick,
+}: AnswerProps) {
   return (
     <div
       className={clsx(
@@ -25,7 +27,7 @@ const Answer = ({ label, isCorrect, checkedAnswer, checked, onClick }: AnswerPro
       <div
         className="flex items-center justify-center border-2 border-gray-500 rounded-lg group-hover:border-gray-400 transition ease-linear"
       >
-        {!checkedAnswer ? (
+        {!checkedAnswer && (
           <MdCheck
             className={clsx(
               'text-primary transition text-2xl',
@@ -33,15 +35,15 @@ const Answer = ({ label, isCorrect, checkedAnswer, checked, onClick }: AnswerPro
               !checked && 'opacity-0',
             )}
           />
-        ) : isCorrect ? (
-          <MdCheck className={'text-green-500 transition text-2xl'} />
-        ) : (
-          <MdClose className={'text-red-500 transition text-2xl'} />
         )}
+
+        {(checkedAnswer && isCorrect) && <MdCheck className="text-green-500 transition text-2xl" />}
+        {(checkedAnswer && !isCorrect) && <MdClose className="text-red-500 transition text-2xl" />}
+
       </div>
       <h2 className="ml-3 text-lg">{label}</h2>
     </div>
   );
-};
+}
 
 export default React.memo(Answer);

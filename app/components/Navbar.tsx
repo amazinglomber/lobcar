@@ -1,10 +1,11 @@
 import { NavLink } from 'remix';
 import { ClientOnly } from 'remix-utils';
 import { MdMenu } from 'react-icons/md';
-import DarkModeSwitch from '~/components/DarkModeSwitch';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import clsx from 'clsx';
+import DarkModeSwitch from '~/components/DarkModeSwitch';
 import useOutsideAlerter from '~/hooks/useOutsideAlerter';
+import Button from '~/components/Button';
 
 const routes = [
   { to: '/app/questions', title: 'Lista pytań' },
@@ -13,18 +14,14 @@ const routes = [
 ];
 
 // TODO: Add category select button
-const Navbar = () => {
+function Navbar() {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  const handleMenuOpen = useCallback(() => setMobileMenuOpened(true), []);
+  const handleMenuClose = useCallback(() => setMobileMenuOpened(false), []);
+
   useOutsideAlerter(drawerRef, handleMenuClose);
-
-  function handleMenuOpen() {
-    setMobileMenuOpened(true);
-  }
-
-  function handleMenuClose() {
-    setMobileMenuOpened(false);
-  }
 
   return (
     <div className="shadow flex px-4 dark:bg-surface-dp2 transition duration-500">
@@ -67,7 +64,7 @@ const Navbar = () => {
             className={({ isActive }) => clsx(
               'p-4 font-bold transition',
               isActive && 'text-primary shadow-navlinkselected',
-              !isActive && 'text-gray-500 dark:text-gray-500 hover:text-gray-400'
+              !isActive && 'text-gray-500 dark:text-gray-500 hover:text-gray-400',
             )}
           >
             {route.title}
@@ -76,11 +73,13 @@ const Navbar = () => {
       </div>
 
       <div className="flex flex-1" />
+
       <ClientOnly fallback={null}>
         <DarkModeSwitch />
       </ClientOnly>
+
     </div>
   );
-};
+}
 
 export default Navbar;

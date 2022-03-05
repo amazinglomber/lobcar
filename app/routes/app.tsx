@@ -1,5 +1,5 @@
 import {
-  Outlet, ActionFunction, Form, LoaderFunction, redirect, useLoaderData,
+  ActionFunction, Form, LoaderFunction, Outlet, redirect, useLoaderData,
 } from 'remix';
 import { Category } from '@prisma/client';
 import Navbar from '~/components/Navbar';
