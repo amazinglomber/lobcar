@@ -14,7 +14,7 @@ const Dialog: React.FunctionComponent<DialogProps> = ({ open, children }) => (
       'flex items-center justify-center',
     )}
   >
-    <Card className="">
+    <Card className="w-[360px] sm:w-3/4 lg:w-1/2">
       {children}
     </Card>
   </Backdrop>

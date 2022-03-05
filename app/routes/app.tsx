@@ -54,9 +54,9 @@ export default function Index() {
       <Navbar />
 
       <Dialog open={openDialog}>
-        <h1 className="text-2xl mb-2">Wybierz kategorię</h1>
+        <h1 className="text-2xl mb-4">Wybierz kategorię</h1>
         <Form method="post">
-          <div className="flex flex-row items-start gap-4">
+          <div className="flex flex-row flex-wrap justify-center gap-4">
 
             {categories.map((cat) => (
               <Button
