@@ -16,15 +16,18 @@ export interface TimerProps {
   start: number;
   end?: number;
   onEnd?: () => void;
+  paused?: boolean;
 }
 
-const Timer: React.FunctionComponent<TimerProps> = ({ start, end = 0, onEnd }) => {
+const Timer: React.FC<TimerProps> = ({
+  start, end = 0, onEnd, paused = false,
+}) => {
   const [seconds, setSeconds] = useState(start);
   const [timerRunning, setTimerRunning] = useState(true);
 
   useInterval(() => {
     setSeconds((currentSeconds) => currentSeconds - 1);
-  }, timerRunning ? 1000 : null);
+  }, timerRunning && !paused ? 1000 : null);
 
   useEffect(() => {
     if (seconds <= end) {

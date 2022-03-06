@@ -58,6 +58,7 @@ const Exam: React.FC<ExamProps> = ({
     setHideMedia(isBasic);
     setTimer(isBasic ? questionReadTime : advancedQuestionAnswerTime);
     setTimerRunning(isBasic || mediaType === 'none');
+    setSelectedAnswer(undefined);
   }, [questionIndex]);
 
   const showMedia = useCallback(() => {
@@ -72,13 +73,13 @@ const Exam: React.FC<ExamProps> = ({
 
   const handleAnswerSelect = useCallback((answer: AnswerValueType) => {
     setSelectedAnswer(answer);
-  }, [question]);
+  }, []);
 
   const addScore = useCallback(() => {
     if (selectedAnswer === question.correctAnswer) {
       onScoreChange(question.points);
     }
-  }, [question, selectedAnswer]);
+  }, [question, selectedAnswer, onScoreChange]);
 
   const handleNextQuestion = useCallback(() => {
     addScore();
@@ -88,14 +89,19 @@ const Exam: React.FC<ExamProps> = ({
   const handleEndExam = useCallback(() => {
     addScore();
     onExamEnd();
-  }, [addScore]);
+  }, [addScore, onExamEnd]);
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row lg:items-start gap-4">
 
       {/* Exam main panel */}
       <div className="flex flex-col flex-1 grow-[3] gap-4">
-        <ExamTopCard question={question} category={category} onExamTimeEnd={handleEndExam} />
+        <ExamTopCard
+          question={question}
+          category={category}
+          onExamTimeEnd={handleEndExam}
+          paused={!timerRunning}
+        />
         <QuestionCard
           question={question}
           checkedAnswer={false}

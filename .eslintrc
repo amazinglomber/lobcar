@@ -9,7 +9,8 @@
     },
     "extends": [
         "airbnb",
-        "airbnb-typescript"
+        "airbnb-typescript",
+        "plugin:react-hooks/recommended"
     ],
     "rules": {
         "react/react-in-jsx-scope": "off",

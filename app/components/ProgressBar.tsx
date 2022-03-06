@@ -9,7 +9,7 @@ export interface ProgressBarProps {
   progressValueStyles?: string;
 }
 
-const ProgressBar: React.FunctionComponent<ProgressBarProps> = ({
+const ProgressBar: React.FC<ProgressBarProps> = ({
   max, value, progressBarStyles, progressValueStyles, valueSuffix,
 }) => (
   <div className={clsx(

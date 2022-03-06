@@ -11,7 +11,7 @@ export interface QuestionMediaProps {
   hideControls?: boolean;
 }
 
-const QuestionMedia: React.FunctionComponent<QuestionMediaProps> = ({
+const QuestionMedia: React.FC<QuestionMediaProps> = ({
   question, hidden = false, onClick, onMediaEnded, hideControls = false,
 }) => {
   const videoRef = createRef<HTMLVideoElement>();
@@ -74,7 +74,7 @@ export interface QuestionMediaPlaceholderProps {
   handleClick?: () => void;
 }
 
-const QuestionMediaPlaceholder: React.FunctionComponent<QuestionMediaPlaceholderProps> = ({ mediaType, handleClick }) => (
+const QuestionMediaPlaceholder: React.FC<QuestionMediaPlaceholderProps> = ({ mediaType, handleClick }) => (
   <div className="bg-gray-500 text-8xl text-white flex items-center justify-center mb-6" style={{ width: 640, height: 360 }} onClick={handleClick}>
     {mediaType === 'image' && <FiCamera />}
     {mediaType === 'video' && <FiVideo />}

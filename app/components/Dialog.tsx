@@ -7,7 +7,7 @@ export interface DialogProps {
   open: boolean;
 }
 
-const Dialog: React.FunctionComponent<DialogProps> = ({ open, children }) => (
+const Dialog: React.FC<DialogProps> = ({ open, children }) => (
   <Backdrop
     className={clsx(
       !open && 'hidden',

@@ -17,7 +17,7 @@ export interface QuestionCardProps {
   className?: string;
 }
 
-const QuestionCard: React.FunctionComponent<QuestionCardProps> = ({
+const QuestionCard: React.FC<QuestionCardProps> = ({
   question, checkedAnswer, className, hideMedia = false, hideControls = false, onMediaClick, onMediaEnded, onAnswerSelect,
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<AnswerValueType>();

@@ -1,11 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
 
-export interface Backdrop {
+interface BackdropProps {
   className?: string;
 }
 
-const Backdrop: React.FunctionComponent<Backdrop> = ({ className, children }) => (
+const Backdrop: React.FC<BackdropProps> = ({ className, children }) => (
   <div
     className={clsx(
       'before:opacity-0',
