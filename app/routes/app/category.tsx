@@ -41,7 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
     cookie.categoryName = catName;
   }
 
-  return redirect(request.url, {
+  return redirect('/app', {
     headers: {
       'Set-Cookie': await categoryCookie.serialize(cookie),
     },
