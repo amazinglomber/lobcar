@@ -30,8 +30,13 @@ export async function getQuestionBySlug(slug: string, languageCode: string): Pro
   return mapToQuestionWithTranslation(q);
 }
 
-export async function getAllQuestions(page: number = 1, languageCode: string = 'pl'): Promise<QuestionsResponse> {
+export async function getAllQuestions(categoryId: Category['id'], page: number = 1, languageCode: string = 'pl'): Promise<QuestionsResponse> {
   const questions = await db.question.findMany({
+    where: {
+      categories: {
+        some: { id: categoryId },
+      },
+    },
     include: {
       translations: {
         where: { languageCode },
@@ -51,7 +56,7 @@ export async function getAllQuestionsWithoutTranslations(): Promise<Question[]> 
   return db.question.findMany();
 }
 
-export async function getRandomQuestion(categoryId: number, languageCode: string): Promise<QuestionWithTranslation> {
+export async function getRandomQuestion(categoryId: Category['id'], languageCode: string): Promise<QuestionWithTranslation> {
   const result: any[] = await db.$queryRaw`
     SELECT * FROM Question Q
     JOIN _CategoryToQuestion CTQ ON Q.id = CTQ.B
@@ -77,7 +82,7 @@ export async function getRandomQuestion(categoryId: number, languageCode: string
   };
 }
 
-export async function getExam(categoryId: number, languageCode: string): Promise<QuestionWithTranslation[]> {
+export async function getExam(categoryId: Category['id'], languageCode: string): Promise<QuestionWithTranslation[]> {
   const questions = await Promise.all([
     getQuestionsForExam(languageCode, categoryId, 'basic', 3, 10),
     getQuestionsForExam(languageCode, categoryId, 'basic', 2, 6),
@@ -90,7 +95,7 @@ export async function getExam(categoryId: number, languageCode: string): Promise
   return questions.flat();
 }
 
-async function getQuestionsForExam(languageCode: string, categoryId: number, scope: 'basic' | 'advanced', points: number, count: number): Promise<QuestionWithTranslation[]> {
+async function getQuestionsForExam(languageCode: string, categoryId: Category['id'], scope: 'basic' | 'advanced', points: number, count: number): Promise<QuestionWithTranslation[]> {
   const questions: any[] = await db.$queryRaw`
     SELECT * FROM Question Q
     JOIN _CategoryToQuestion CTQ ON Q.id=CTQ.B
@@ -118,7 +123,7 @@ export async function getCategories(): Promise<Category[]> {
   return db.category.findMany();
 }
 
-export async function getCategoryById(id: number): Promise<Category | null> {
+export async function getCategoryById(id: Category['id']): Promise<Category | null> {
   return db.category.findUnique({
     where: { id },
   });

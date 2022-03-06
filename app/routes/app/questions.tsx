@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async ({ request }): Promise<QuestionsResp
   const url = new URL(request.url);
   const page = +(url.searchParams.get('page') ?? 1);
 
-  return getAllQuestions(page, 'pl');
+  return getAllQuestions(categoryCookie.categoryId, page, 'pl');
 };
 
 export const meta: MetaFunction = () => ({
