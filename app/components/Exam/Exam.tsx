@@ -12,7 +12,7 @@ import ExamProgressBar from '~/components/Exam/ExamProgressBar';
 
 const questionReadTime = 20;
 const questionAnswerTime = 15;
-const advancedQuestionAnswerTime = 5;
+const advancedQuestionAnswerTime = 50;
 
 export interface ExamProps {
   questions: QuestionWithTranslation[];

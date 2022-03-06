@@ -17,7 +17,7 @@ const ExamTopCard: React.FC<ExamTopCardProps> = ({
   <Card className="flex flex-row justify-between">
     <span>{`Wartość punktowa: ${question.points}`}</span>
     <span>{`Wybrana kategoria: ${category.name}`}</span>
-    <Timer start={15} onEnd={onExamTimeEnd} paused={paused} />
+    <Timer start={60 * 25} onEnd={onExamTimeEnd} paused={paused} />
   </Card>
 );
 
