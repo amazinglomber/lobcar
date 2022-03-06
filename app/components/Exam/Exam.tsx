@@ -12,7 +12,7 @@ import ExamProgressBar from '~/components/Exam/ExamProgressBar';
 
 const questionReadTime = 20;
 const questionAnswerTime = 15;
-const advancedQuestionAnswerTime = 50;
+const advancedQuestionAnswerTime = 5;
 
 export interface ExamProps {
   questions: QuestionWithTranslation[];
@@ -81,15 +81,19 @@ const Exam: React.FC<ExamProps> = ({
     }
   }, [question, selectedAnswer, onScoreChange]);
 
-  const handleNextQuestion = useCallback(() => {
-    addScore();
-    setQuestionIndex((index) => index + 1);
-  }, [addScore]);
-
   const handleEndExam = useCallback(() => {
     addScore();
     onExamEnd();
   }, [addScore, onExamEnd]);
+
+  const handleNextQuestion = useCallback(() => {
+    if (questionIndex <= 30) {
+      setQuestionIndex((index) => index + 1);
+      addScore();
+    } else {
+      handleEndExam();
+    }
+  }, [addScore, questionIndex, handleEndExam]);
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row lg:items-start gap-4">
