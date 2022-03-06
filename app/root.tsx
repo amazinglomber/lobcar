@@ -1,25 +1,19 @@
+import type { MetaFunction } from 'remix';
 import {
-  Links,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration
-} from "remix";
-import styles from "./tailwind.css";
-import type { MetaFunction } from "remix";
+  Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration,
+} from 'remix';
+
+import styles from './tailwind.css';
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }];
+  return [{ rel: 'stylesheet', href: styles }];
 }
 
-export const meta: MetaFunction = () => {
-  return {
-    title: `Darmowe testy na prawo jazdy ${new Date().getUTCFullYear()} - lobcar`,
-    description: 'W pełni darmowe testy na prawo jazdy, bez rejestracji. Oficjalna baza pytań 2022. ' +
-      'Wszystkie kategorie A, B, C, D, T, AM, A1, A2, B1, C1, D1, PT - pozwolenie na tramwaj.'
-  };
-};
+export const meta: MetaFunction = () => ({
+  title: `Darmowe testy na prawo jazdy ${new Date().getUTCFullYear()} - lobcar`,
+  description: 'W pełni darmowe testy na prawo jazdy, bez rejestracji. Oficjalna baza pytań 2022. '
+      + 'Wszystkie kategorie A, B, C, D, T, AM, A1, A2, B1, C1, D1, PT - pozwolenie na tramwaj.',
+});
 
 export default function App() {
   return (

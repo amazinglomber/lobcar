@@ -1,89 +1,140 @@
-import data from '../data/data.json';
+import { Category, Question, QuestionTranslation } from '@prisma/client';
+import { db } from '~/utils/db.server';
 
-export interface Question {
-  name: string,
-  id: string,
-  slug: string,
-  question: {
-    pl: string,
-    en: string,
-    de: string,
-  },
+export interface QuestionWithTranslation extends Question {
+  question: string;
   answers: {
-    pl: {
-      a: string,
-      b: string,
-      c: string,
-    },
-    en: {
-      a: string,
-      b: string,
-      c: string,
-    },
-    de: {
-      a: string,
-      b: string,
-      c: string,
-    },
-  },
-  correctAnswer: string,
-  media: string,
-  scope: string,
-  points: string,
-  categories: string[],
-  block: string,
-  source: string,
-  askedFor: string,
-  safety: string,
-  status: string,
-  subject: string,
+    a: string;
+    b: string;
+    c: string;
+  }
 }
 
-export interface Database {
-  version: Date;
-  questions: Question[];
+export interface QuestionsResponse {
+  questions: QuestionWithTranslation[];
+
 }
 
-const mediaBaseURL = 'https://d2v1k3xewbu9zy.cloudfront.net/';
+export async function getQuestionBySlug(slug: string, languageCode: string): Promise<QuestionWithTranslation | null> {
+  const q = await db.question.findUnique({
+    where: { slug },
+    include: {
+      translations: {
+        where: { languageCode },
+      },
+    },
+  });
 
-function loadDatabase(): Database {
-  const _data = data as Database;
+  if (!q) return null;
+
+  return mapToQuestionWithTranslation(q);
+}
+
+export async function getAllQuestions(page: number = 1, languageCode: string = 'pl'): Promise<QuestionsResponse> {
+  const questions = await db.question.findMany({
+    include: {
+      translations: {
+        where: { languageCode },
+      },
+    },
+    skip: (page - 1) * 20,
+    take: 20,
+  });
 
   return {
-    version: new Date(_data.version),
-    questions: _data.questions.map((question) => ({
-      ...question,
-      media: mediaBaseURL + question.media,
-    })),
+    questions: questions.map((q) => mapToQuestionWithTranslation(q)),
+
   };
 }
 
-const database = loadDatabase();
-
-// const database: Database = loadDatabase();
-
-export function getDatabase(): Database {
-  return database;
+export async function getAllQuestionsWithoutTranslations(): Promise<Question[]> {
+  return db.question.findMany();
 }
 
-export function getQuestions(): Question[] {
-  return database.questions;
+export async function getRandomQuestion(categoryId: number, languageCode: string): Promise<QuestionWithTranslation> {
+  const result: any[] = await db.$queryRaw`
+    SELECT * FROM Question Q
+    JOIN _CategoryToQuestion CTQ ON Q.id = CTQ.B
+    JOIN QuestionTranslation QT ON Q.id = QT.questionId
+    WHERE QT.languageCode = ${languageCode} AND CTQ.A = ${categoryId}
+    ORDER BY random()
+    LIMIT 1;
+  `;
+
+  const {
+    questionContent, media, answerA, answerB, answerC, ...question
+  } = result[0];
+
+  return {
+    ...question,
+    media: `https://d2v1k3xewbu9zy.cloudfront.net/${media}`,
+    question: questionContent,
+    answers: {
+      a: answerA,
+      b: answerB,
+      c: answerC,
+    },
+  };
 }
 
-export function getQuestionBySlug(slug: string): Question | undefined {
-  return database.questions.find((question) => question.slug === slug);
+export async function getExam(categoryId: number, languageCode: string): Promise<QuestionWithTranslation[]> {
+  const questions = await Promise.all([
+    getQuestionsForExam(languageCode, categoryId, 'basic', 3, 10),
+    getQuestionsForExam(languageCode, categoryId, 'basic', 2, 6),
+    getQuestionsForExam(languageCode, categoryId, 'basic', 1, 4),
+    getQuestionsForExam(languageCode, categoryId, 'advanced', 3, 6),
+    getQuestionsForExam(languageCode, categoryId, 'advanced', 2, 4),
+    getQuestionsForExam(languageCode, categoryId, 'advanced', 1, 2),
+  ]);
+
+  return questions.flat();
 }
 
-export function getRandomQuestion(): Question {
-  return database.questions[Math.floor(Math.random() * database.questions.length)];
+async function getQuestionsForExam(languageCode: string, categoryId: number, scope: 'basic' | 'advanced', points: number, count: number): Promise<QuestionWithTranslation[]> {
+  const questions: any[] = await db.$queryRaw`
+    SELECT * FROM Question Q
+    JOIN _CategoryToQuestion CTQ ON Q.id=CTQ.B
+    JOIN QuestionTranslation QT ON Q.id=QT.questionId
+    WHERE QT.languageCode=${languageCode} AND CTQ.A=${categoryId} AND  Q.scope=${scope} AND Q.points=${points}
+    ORDER BY random()
+    LIMIT ${count};
+  `;
+
+  return questions.map(({
+    questionContent, media, answerA, answerB, answerC, ...question
+  }) => ({
+    ...question,
+    media: `https://d2v1k3xewbu9zy.cloudfront.net/${media}`,
+    question: questionContent,
+    answers: {
+      a: answerA,
+      b: answerB,
+      c: answerC,
+    },
+  }));
 }
 
-export function getMediaType(question: Question): 'video' | 'image' | 'none' {
-  if (question.media.endsWith('.mp4')) {
-    return 'video';
-  } else if (question.media.endsWith('/')) {
-    return 'none';
-  }
+export async function getCategories(): Promise<Category[]> {
+  return db.category.findMany();
+}
 
-  return 'image';
+export async function getCategoryById(id: number): Promise<Category | null> {
+  return db.category.findUnique({
+    where: { id },
+  });
+}
+
+function mapToQuestionWithTranslation(q: (Question & { translations: QuestionTranslation[] })) {
+  const { translations, media, ...qWithoutTranslation } = q;
+
+  return {
+    ...qWithoutTranslation,
+    question: translations[0].questionContent,
+    media: `https://d2v1k3xewbu9zy.cloudfront.net/${media}`,
+    answers: {
+      a: translations[0].answerA,
+      b: translations[0].answerB,
+      c: translations[0].answerC,
+    },
+  };
 }

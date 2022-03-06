@@ -1,18 +1,28 @@
-import type { MetaFunction } from 'remix';
+import type { LoaderFunction, MetaFunction } from 'remix';
+import { Outlet, redirect } from 'remix';
+import PageOffset from '~/components/PageOffset';
 
-export const meta: MetaFunction = () => {
-  return {
-    title: `lobcar - Egzamin`,
-    description: 'Sprawdź swoją wiedzę rozwiązując egzamin',
-  };
+import { getCategoryCookie } from '~/utils/cookieHelpers';
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const categoryCookie = await getCategoryCookie(request);
+
+  if (!categoryCookie.categoryId) {
+    throw redirect('/app/category');
+  }
+
+  return null;
 };
 
-export default function Question() {
-  return (
-    <div>
-      <h1>egzamin</h1>
+export const meta: MetaFunction = () => ({
+  title: 'lobcar - Egzamin',
+  description: 'Sprawdź swoją wiedzę rozwiązując egzamin',
+});
 
-      {/*<h2>{question.question.pl}</h2>*/}
-    </div>
+export default function Exam() {
+  return (
+    <PageOffset>
+      <Outlet />
+    </PageOffset>
   );
 }

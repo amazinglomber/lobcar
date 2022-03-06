@@ -1,7 +1,5 @@
-import { redirect } from 'remix';
+import { LoaderFunction, redirect } from 'remix';
 
-// ======= Redirect user from /app to /app/questions =======
-export const loader = async () => {
+export const loader: LoaderFunction = async ({ }) => {
   throw redirect('/app/questions');
-}
-// =========================================================
+};

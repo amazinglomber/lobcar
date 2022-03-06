@@ -1,49 +1,62 @@
-import { redirect, useLoaderData } from 'remix';
-import { getQuestionBySlug, Question } from '~/data';
+import { useCallback, useEffect, useState } from 'react';
 import type { LoaderFunction, MetaFunction } from 'remix';
-import QuestionCard from '~/components/QuestionCard';
+import { redirect, useLoaderData } from 'remix';
+import QuestionCard from '~/components/Question/QuestionCard';
 import Card from '~/components/Card';
 import Button from '~/components/Button';
+import { getQuestionBySlug, QuestionWithTranslation } from '~/data';
+import PageOffset from '~/components/PageOffset';
 
-export const loader: LoaderFunction = async ({ params }): Promise<Question> => {
-  if (!params.slug) throw new Error('expected params.slug');
+export const loader: LoaderFunction = async ({ params }): Promise<QuestionWithTranslation> => {
+  if (!params.slug) {
+    throw redirect('/app/questions');
+  }
 
-  const question = getQuestionBySlug(params.slug);
-  if (!question) throw redirect('/app/questions');
+  const question = await getQuestionBySlug(params.slug, 'pl');
+
+  if (!question) {
+    throw redirect('/app/questions');
+  }
 
   return question;
 };
 
-export const meta: MetaFunction = ({ data: question }: { data: Question }) => {
-  return {
-    title: `lobcar - ${question.question.pl}`,
-    description: `${question.question.pl} Zobacz odpowiedź lub rozwiąż to pytanie samodzielnie, za darmo.`
-  };
-};
+export const meta: MetaFunction = ({ data: question }: { data: QuestionWithTranslation }) => ({
+  title: `lobcar - ${question.question}`,
+  description: `${question.question} Zobacz odpowiedź lub rozwiąż to pytanie samodzielnie, za darmo.`,
+});
 
 export default function Question() {
-  const question = useLoaderData<Question>();
+  const question = useLoaderData<QuestionWithTranslation>();
+
+  const [checkedAnswer, setCheckedAnswer] = useState(false);
+
+  useEffect(() => {
+    setCheckedAnswer(false);
+  }, [question]);
+
+  const handleCheckAnswer = useCallback(() => setCheckedAnswer(true), []);
 
   return (
-    <div className="flex flex-row items-start">
+    <PageOffset>
+      <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+        <QuestionCard
+          className="flex-1 grow-[3]"
+          question={question}
+          checkedAnswer={checkedAnswer}
+        />
 
-      <Card className="flex-1 grow-[1]">
-        <span>tutaj reklama bedzie</span>
-        {/*<Button>Sprawdź odpowiedź</Button>*/}
-        {/*<Button>Losuj następne</Button>*/}
-      </Card>
+        <div className="flex flex-col flex-1 grow-[1] gap-4">
 
-      <QuestionCard
-        className="flex-1 grow-[3]"
-        question={question}
-      />
+          <Card className="flex flex-col ">
+            <Button onClick={handleCheckAnswer}>Sprawdź odpowiedź</Button>
+          </Card>
 
-      <Card className="flex flex-1 flex-col grow-[1]">
-        <Button>Sprawdź odpowiedź</Button>
-        <Button variant="outlined">Poprzednie pytanie</Button>
-        <Button variant="outlined">Nastpęne pytanie</Button>
-      </Card>
+          {/* <AdCard className="flex-1 grow-[1]" /> */}
 
-    </div>
+        </div>
+
+      </div>
+    </PageOffset>
   );
 }

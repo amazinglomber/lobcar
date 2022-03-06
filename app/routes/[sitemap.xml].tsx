@@ -1,12 +1,8 @@
 import type { LoaderFunction } from 'remix';
-import { getDatabase } from '../data';
+import { getAllQuestionsWithoutTranslations } from '~/data';
 
 export const loader: LoaderFunction = async () => {
-
-  const database = getDatabase();
-
-  let version = database.version;
-  const lastmod = version.getFullYear() + '-' + ('0' + (version.getMonth()+1)).slice(-2) + '-' + ('0' + version.getDate()).slice(-2);
+  const questions = await getAllQuestionsWithoutTranslations();
 
   const sitemap = `
     <?xml version="1.0" encoding="UTF-8"?>
@@ -31,13 +27,12 @@ export const loader: LoaderFunction = async () => {
         <loc>https://lobcar.niezurawski.com/app/random</loc>
       </url>
       
-      ${database.questions.map((question) => (
-        `<url>
+      ${questions.map((question) => (
+    `<url>
           <loc>https://lobcar.niezurawski.com/app/questions/${question.slug}</loc>
-          <lastmod>${lastmod}</lastmod>
           <priority>0.8</priority>
-        </url>`  
-      ))}
+        </url>`
+  ))}
     </urlset>
   `.trim();
 

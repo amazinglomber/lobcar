@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 type Mode = 'light' | 'dark';
 
 function loadFromLocalStorage(): Mode {
-  let mode = window.localStorage.getItem('mode') ?? 'light';
+  let mode = window.localStorage.getItem('mode');
 
-  if (mode !== 'dark' && mode !== 'light') {
+  if (!mode && mode !== 'dark' && mode !== 'light') {
     mode = 'light';
+    localStorage.setItem('mode', 'light');
   }
 
   return mode as Mode;
@@ -36,8 +37,7 @@ function useTheme() {
     setMode(mode);
   }
 
-  return { switchTheme, setTheme };
+  return { switchTheme, setTheme, mode };
 }
 
 export default useTheme;
-
