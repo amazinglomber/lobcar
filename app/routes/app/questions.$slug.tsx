@@ -6,6 +6,7 @@ import Card from '~/components/Card';
 import Button from '~/components/Button';
 import { getQuestionBySlug, QuestionWithTranslation } from '~/data';
 import PageOffset from '~/components/PageOffset';
+import QuestionInfo from '~/components/Question/QuestionInfo';
 
 export const loader: LoaderFunction = async ({ params }): Promise<QuestionWithTranslation> => {
   if (!params.slug) {
@@ -51,6 +52,8 @@ export default function Question() {
           <Card className="flex flex-col ">
             <Button onClick={handleCheckAnswer}>Sprawdź odpowiedź</Button>
           </Card>
+
+          <QuestionInfo question={question} />
 
           {/* <AdCard className="flex-1 grow-[1]" /> */}
 

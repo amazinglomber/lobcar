@@ -6,6 +6,7 @@ import Card from '~/components/Card';
 import Button from '~/components/Button';
 import { getRandomQuestion, QuestionWithTranslation } from '~/data';
 import { getCategoryCookie } from '~/utils/cookieHelpers';
+import QuestionInfo from '~/components/Question/QuestionInfo';
 
 export const loader: LoaderFunction = async ({ request }): Promise<QuestionWithTranslation> => {
   const categoryCookie = await getCategoryCookie(request);
@@ -50,6 +51,8 @@ export default function Question() {
           <Button onClick={handleNextRandom} variant="outlined">Losuj następne</Button>
           <Button onClick={handleCheckAnswer}>Sprawdź odpowiedź</Button>
         </Card>
+
+        <QuestionInfo question={question} />
 
       </div>
 
