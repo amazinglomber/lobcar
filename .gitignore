@@ -9,3 +9,6 @@ public/build
 prisma/data
 
 app/tailwind.css
+
+scripts/downloadDatabase.js
+app/data/data.json

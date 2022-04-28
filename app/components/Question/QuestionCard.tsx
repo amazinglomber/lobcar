@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import QuestionMedia, { QuestionMediaProps } from '~/components/Question/QuestionMedia';
 import Card from '~/components/Card';
 import Answer from '~/components/Answer';
-import { QuestionWithTranslation } from '~/data';
 
 export type AnswerValueType = 'T' | 'N' | 'A' | 'B' | 'C';
 
 export interface QuestionCardProps {
-  question: QuestionWithTranslation;
+  question: Question;
   checkedAnswer: boolean;
   hideMedia?: boolean;
   hideControls?: boolean;
@@ -18,7 +17,14 @@ export interface QuestionCardProps {
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
-  question, checkedAnswer, className, hideMedia = false, hideControls = false, onMediaClick, onMediaEnded, onAnswerSelect,
+  question,
+  checkedAnswer,
+  className,
+  hideMedia = false,
+  hideControls = false,
+  onMediaClick,
+  onMediaEnded,
+  onAnswerSelect,
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<AnswerValueType>();
 
@@ -51,7 +57,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       </div>
 
       <h1 className="text-xl mb-6 whitespace-normal">
-        {question.question}
+        {question.translations.pl.question}
       </h1>
       {(question.correctAnswer === 'T' || question.correctAnswer === 'N') ? (
         <div>
@@ -72,7 +78,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             <Answer
               key={`answer-${x}`}
               checked={selectedAnswer === x.toUpperCase()}
-              label={question.answers[x]}
+              label={question.translations.pl.answers[x]}
               onClick={handleAnswerClick(x.toUpperCase() as AnswerValueType)}
               isCorrect={question.correctAnswer.toLowerCase() === x}
               checkedAnswer={checkedAnswer}

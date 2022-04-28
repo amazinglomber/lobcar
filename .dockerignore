@@ -1,3 +1,5 @@
 node_modules
-prisma/data
 .cache
+scripts/downloadDatabase.js
+app/data/data.json
+public/sitemap.xml

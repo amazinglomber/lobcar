@@ -1,6 +1,5 @@
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
-import { Category } from '@prisma/client';
 import clientOnly from '~/utils/clientOnly';
 
 /**
@@ -9,22 +8,19 @@ import clientOnly from '~/utils/clientOnly';
 const useCategory = () => {
   const categoryCookie = Cookies.get('category');
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<Category['id']>();
-  const [selectedCategoryName, setSelectedCategoryName] = useState<Category['name']>();
+  const [selectedCategory, setSelectedCategory] = useState<Category>();
 
   useEffect(() => {
     clientOnly(() => {
       if (!categoryCookie) return;
 
-      const { categoryId, categoryName } = JSON.parse(window.atob(categoryCookie));
-      setSelectedCategoryId(categoryId);
-      setSelectedCategoryName(categoryName);
+      const { category } = JSON.parse(window.atob(categoryCookie));
+      setSelectedCategory(category);
     });
   }, [categoryCookie]);
 
   return {
-    selectedCategoryId,
-    selectedCategoryName,
+    selectedCategory,
   };
 };
 

@@ -2,26 +2,24 @@ import React from 'react';
 import {
   ActionFunction, Form, LoaderFunction, redirect, useLoaderData,
 } from 'remix';
-import { Category } from '@prisma/client';
 import { getCategoryCookie } from '~/utils/cookieHelpers';
 import { categoryCookie } from '~/cookies';
 import PageOffset from '~/components/PageOffset';
 import Card from '~/components/Card';
 import Button from '~/components/Button';
-import { getCategories } from '~/data';
+import { getCategories } from '~/data/data';
 
 interface LoaderData {
-  categoryId: number | null;
+  category: Category | null;
   categories: Category[];
 }
 
 export const loader: LoaderFunction = async ({ request }): Promise<LoaderData> => {
-  const categories = await getCategories();
-
+  const categories = getCategories();
   const cookie = await getCategoryCookie(request);
 
   return {
-    categoryId: cookie.categoryId,
+    category: cookie.category,
     categories,
   };
 };
@@ -33,12 +31,9 @@ export const action: ActionFunction = async ({ request }) => {
   const cat = bodyParams.get('categoryId');
 
   if (!cat) {
-    cookie.categoryId = null;
-    cookie.categoryName = null;
+    cookie.category = null;
   } else {
-    const [catId, catName] = (cat as string).split('|');
-    cookie.categoryId = +catId;
-    cookie.categoryName = catName;
+    cookie.category = cat as string;
   }
 
   return redirect('/app', {
@@ -49,7 +44,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 function Category() {
-  const { categoryId, categories } = useLoaderData<LoaderData>();
+  const { category, categories } = useLoaderData<LoaderData>();
 
   return (
     <PageOffset>
@@ -59,14 +54,14 @@ function Category() {
           <div className="flex flex-row flex-wrap justify-center gap-4">
 
             {categories.map((cat) => (
-              <div key={`form-${cat.id}`}>
+              <div key={`form-${cat}`}>
                 <Button
-                  variant={cat.id === categoryId ? 'contained' : 'outlined'}
+                  variant={cat === category ? 'contained' : 'outlined'}
                   type="submit"
-                  value={`${cat.id}|${cat.name}`}
+                  value={cat}
                   name="categoryId"
                 >
-                  {cat.name}
+                  {cat}
                 </Button>
               </div>
             ))}

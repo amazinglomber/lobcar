@@ -1,7 +1,7 @@
 import { NavLink } from 'remix';
 import { ClientOnly } from 'remix-utils';
 import { MdMenu } from 'react-icons/md';
-import { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import clsx from 'clsx';
 import DarkModeSwitch from '~/components/DarkModeSwitch';
 import useOutsideAlerter from '~/hooks/useOutsideAlerter';
@@ -15,8 +15,8 @@ const routes = [
 ];
 
 // TODO: Add category select button
-function Navbar() {
-  const { selectedCategoryName } = useCategory();
+const Navbar: React.FC = () => {
+  const { selectedCategory } = useCategory();
 
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -81,7 +81,7 @@ function Navbar() {
         <div className="flex flex-row items-center mr-4">
           <span className="mr-2">Wybrana kategoria: </span>
           <LinkButton to="/app/category" variant="outlined">
-            {selectedCategoryName ?? '?'}
+            {selectedCategory ?? '?'}
           </LinkButton>
         </div>
 
@@ -90,6 +90,6 @@ function Navbar() {
 
     </div>
   );
-}
+};
 
 export default Navbar;

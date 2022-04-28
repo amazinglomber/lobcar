@@ -7,7 +7,7 @@ import { getCategoryCookie } from '~/utils/cookieHelpers';
 export const loader: LoaderFunction = async ({ request }) => {
   const categoryCookie = await getCategoryCookie(request);
 
-  if (!categoryCookie.categoryId) {
+  if (!categoryCookie.category) {
     throw redirect('/app/category');
   }
 

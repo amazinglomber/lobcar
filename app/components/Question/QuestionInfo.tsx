@@ -1,6 +1,6 @@
 import React from 'react';
 import Card from '~/components/Card';
-import { QuestionWithTranslation } from '~/data';
+import { QuestionWithTranslation } from '~/data/data';
 
 interface QuestionInfoProps {
   question: QuestionWithTranslation;

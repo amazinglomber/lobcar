@@ -4,18 +4,18 @@ import { useCallback, useEffect, useState } from 'react';
 import QuestionCard from '~/components/Question/QuestionCard';
 import Card from '~/components/Card';
 import Button from '~/components/Button';
-import { getRandomQuestion, QuestionWithTranslation } from '~/data';
 import { getCategoryCookie } from '~/utils/cookieHelpers';
 import QuestionInfo from '~/components/Question/QuestionInfo';
+import { getRandomQuestion } from '~/data/data';
 
-export const loader: LoaderFunction = async ({ request }): Promise<QuestionWithTranslation> => {
+export const loader: LoaderFunction = async ({ request }): Promise<Question> => {
   const categoryCookie = await getCategoryCookie(request);
 
-  if (!categoryCookie.categoryId) {
+  if (!categoryCookie.category) {
     throw redirect('/app/category');
   }
 
-  return getRandomQuestion(categoryCookie.categoryId, 'pl');
+  return getRandomQuestion(categoryCookie.category);
 };
 
 export const meta: MetaFunction = () => ({
@@ -23,7 +23,7 @@ export const meta: MetaFunction = () => ({
 });
 
 export default function Question() {
-  const question = useLoaderData<QuestionWithTranslation>();
+  const question = useLoaderData<Question>();
   const navigate = useNavigate();
 
   const [checkedAnswer, setCheckedAnswer] = useState(false);
@@ -34,7 +34,7 @@ export default function Question() {
 
   const handleCheckAnswer = useCallback(() => setCheckedAnswer(true), []);
 
-  const handleNextRandom = useCallback(() => navigate('/app/random'), []);
+  const handleNextRandom = useCallback(() => navigate('/app/random'), [navigate]);
 
   return (
     <div className="flex flex-col lg:flex-row lg:items-start m-4 gap-4">
