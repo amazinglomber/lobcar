@@ -1,5 +1,4 @@
 import React, { createRef, useCallback, useEffect } from 'react';
-import { Question } from '@prisma/client';
 import { FiCamera, FiCameraOff, FiVideo } from 'react-icons/fi';
 import { getMediaType } from '~/utils/dataHelpers';
 

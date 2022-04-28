@@ -4,16 +4,16 @@ import { redirect, useLoaderData } from 'remix';
 import QuestionCard from '~/components/Question/QuestionCard';
 import Card from '~/components/Card';
 import Button from '~/components/Button';
-import { getQuestionBySlug, QuestionWithTranslation } from '~/data';
 import PageOffset from '~/components/PageOffset';
 import QuestionInfo from '~/components/Question/QuestionInfo';
+import { getQuestionBySlug } from '~/data/data';
 
-export const loader: LoaderFunction = async ({ params }): Promise<QuestionWithTranslation> => {
+export const loader: LoaderFunction = async ({ params }): Promise<Question> => {
   if (!params.slug) {
     throw redirect('/app/questions');
   }
 
-  const question = await getQuestionBySlug(params.slug, 'pl');
+  const question = await getQuestionBySlug(params.slug);
 
   if (!question) {
     throw redirect('/app/questions');
@@ -22,13 +22,13 @@ export const loader: LoaderFunction = async ({ params }): Promise<QuestionWithTr
   return question;
 };
 
-export const meta: MetaFunction = ({ data: question }: { data: QuestionWithTranslation }) => ({
-  title: `lobcar - ${question.question}`,
-  description: `${question.question} Zobacz odpowiedź lub rozwiąż to pytanie samodzielnie, za darmo.`,
+export const meta: MetaFunction = ({ data: question }: { data: Question }) => ({
+  title: `lobcar - ${question.translations.pl.question}`,
+  description: `${question.translations.pl.question} Zobacz odpowiedź lub rozwiąż to pytanie samodzielnie, za darmo.`,
 });
 
 export default function Question() {
-  const question = useLoaderData<QuestionWithTranslation>();
+  const question = useLoaderData<Question>();
 
   const [checkedAnswer, setCheckedAnswer] = useState(false);
 

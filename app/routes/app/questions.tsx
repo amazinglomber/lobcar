@@ -2,22 +2,22 @@ import type { LoaderFunction, MetaFunction } from 'remix';
 import { Link, redirect, useFetcher } from 'remix';
 import { useCallback, useEffect, useState } from 'react';
 import Card from '~/components/Card';
-import { getAllQuestions, QuestionsResponse, QuestionWithTranslation } from '~/data';
 import PageOffset from '~/components/PageOffset';
 import Button from '~/components/Button';
 import { getCategoryCookie } from '~/utils/cookieHelpers';
+import { getAllQuestions } from '~/data/data';
 
-export const loader: LoaderFunction = async ({ request }): Promise<QuestionsResponse> => {
+export const loader: LoaderFunction = async ({ request }): Promise<Question[]> => {
   const categoryCookie = await getCategoryCookie(request);
 
-  if (!categoryCookie.categoryId) {
+  if (!categoryCookie.category) {
     throw redirect('/app/category');
   }
 
   const url = new URL(request.url);
   const page = +(url.searchParams.get('page') ?? 1);
 
-  return getAllQuestions(categoryCookie.categoryId, page, 'pl');
+  return getAllQuestions(categoryCookie.category, page * 20, (page + 1) * 20);
 };
 
 export const meta: MetaFunction = () => ({
@@ -26,8 +26,8 @@ export const meta: MetaFunction = () => ({
 });
 
 export default function Questions() {
-  const fetcher = useFetcher<QuestionsResponse>();
-  const [questions, setQuestions] = useState<QuestionWithTranslation[]>([]);
+  const fetcher = useFetcher<Question[]>();
+  const [questions, setQuestions] = useState<Question[]>([]);
 
   const [page, setPage] = useState(1);
 
@@ -36,8 +36,8 @@ export default function Questions() {
   }, [page]);
 
   useEffect(() => {
-    if (fetcher.data && fetcher.data.questions.length > 0) {
-      setQuestions((prevQuestions) => [...prevQuestions, ...fetcher.data.questions]);
+    if (fetcher.data && fetcher.data.length > 0) {
+      setQuestions((prevQuestions) => [...prevQuestions, ...fetcher.data]);
     }
   }, [fetcher.data]);
 
@@ -54,7 +54,7 @@ export default function Questions() {
 
           {questions.map((question) => (
             <div key={`question-${question.slug}`} style={{ padding: 4 }}>
-              <Link prefetch="intent" to={question.slug}>{question.question}</Link>
+              <Link prefetch="intent" to={question.slug}>{question.translations.pl.question}</Link>
             </div>
           ))}
 

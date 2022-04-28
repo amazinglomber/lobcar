@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Category } from '@prisma/client';
 import ExamTopCard from '~/components/Exam/ExamTopCard';
 import QuestionCard, { AnswerValueType } from '~/components/Question/QuestionCard';
 import ExamQuestionNumberCards from '~/components/Exam/ExamQuestionNumberCards';
@@ -7,7 +6,6 @@ import Card from '~/components/Card';
 import Button from '~/components/Button';
 import { getMediaType } from '~/utils/dataHelpers';
 import useInterval from '~/hooks/useInterval';
-import { QuestionWithTranslation } from '~/data';
 import ExamProgressBar from '~/components/Exam/ExamProgressBar';
 
 const questionReadTime = 20;
@@ -15,7 +13,7 @@ const questionAnswerTime = 15;
 const advancedQuestionAnswerTime = 50;
 
 export interface ExamProps {
-  questions: QuestionWithTranslation[];
+  questions: Question[];
   category: Category;
   onExamEnd: () => void;
   onScoreChange: (newScore: number) => void;

@@ -2,36 +2,28 @@ import React, { useCallback, useState } from 'react';
 import {
   LoaderFunction, MetaFunction, redirect, useLoaderData,
 } from 'remix';
-import { Category } from '@prisma/client';
-import { getCategoryById, getExam, QuestionWithTranslation } from '~/data';
 import { getCategoryCookie } from '~/utils/cookieHelpers';
 import ExamResult from '~/components/Exam/ExamResult';
 import Exam from '~/components/Exam/Exam';
+import { getExam } from '~/data/data';
 
 interface LoaderData {
-  questions: QuestionWithTranslation[];
+  questions: Question[];
   category: Category;
 }
 
 export const loader: LoaderFunction = async ({ request }): Promise<LoaderData> => {
   const categoryCookie = await getCategoryCookie(request);
 
-  if (categoryCookie.categoryId === null) {
+  if (categoryCookie.category === null) {
     throw redirect('/app');
   }
 
-  const category = await getCategoryById(categoryCookie.categoryId);
-
-  // TODO: Add error here?
-  if (category === null) {
-    throw redirect('/app');
-  }
-
-  const questions = await getExam(category.id, 'pl');
+  const questions = getExam(categoryCookie.category);
 
   return {
     questions,
-    category,
+    category: categoryCookie.category,
   };
 };
 
