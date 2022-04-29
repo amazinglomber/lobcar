@@ -1,13 +1,35 @@
-import type { MetaFunction } from 'remix';
+import type { LinksFunction, LoaderFunction, MetaFunction } from 'remix';
 import {
-  Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration,
+  Links, LiveReload, Meta, Outlet, redirect, Scripts, ScrollRestoration,
 } from 'remix';
 
 import styles from './tailwind.css';
 
-export function links() {
-  return [{ rel: 'stylesheet', href: styles }];
-}
+export const links: LinksFunction = () => [
+  { rel: 'stylesheet', href: styles },
+];
+
+export const loader: LoaderFunction = ({ request }) => {
+  // upgrade people to https automatically
+
+  const url = new URL(request.url);
+  const { hostname } = url;
+  const proto = request.headers.get('X-Forwarded-Proto') ?? url.protocol;
+
+  url.host = request.headers.get('X-Forwarded-Host')
+    ?? request.headers.get('host')
+    ?? url.host;
+  url.protocol = 'https:';
+
+  if (proto === 'http' && hostname !== 'localhost') {
+    return redirect(url.toString(), {
+      headers: {
+        'X-Forwarded-Proto': 'https',
+      },
+    });
+  }
+  return {};
+};
 
 export const meta: MetaFunction = () => ({
   title: `Darmowe testy na prawo jazdy ${new Date().getUTCFullYear()} - lobcar`,
