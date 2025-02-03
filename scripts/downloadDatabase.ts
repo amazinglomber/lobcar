@@ -45,10 +45,12 @@ const header = [
 async function main() {
   console.log('== DATABASE GENERATOR ==');
 
-  downloadHTML()
-    .then(getAttachmentURL)
-    .then(downloadDatabase)
-    .then(readData)
+  // downloadHTML()
+  // .then(getAttachmentURL)
+  // .then(downloadDatabase)
+
+  const file = readXlsxFile('./app/data/data_22_02_2022r.xlsx');
+  readData(file)
     .then(createJSONDatabase)
     .then(generateSitemap)
     .then(() => console.log('== FINISHED =='));
@@ -208,6 +210,10 @@ async function downloadDatabase(url: string): Promise<XLSX.WorkBook> {
 
       return XLSX.read(response.data);
     });
+}
+
+function readXlsxFile(filename: string) {
+  return XLSX.readFile(filename);
 }
 
 async function getAttachmentURL(html: string) {
